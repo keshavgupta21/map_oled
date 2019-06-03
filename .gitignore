@@ -1,1 +1,4 @@
 *.osm
+images/
+final.png
+graphs.pkl
