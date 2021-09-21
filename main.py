@@ -16,24 +16,25 @@ with open("graphs_{0}.pkl".format(name), "rb") as f:
    ref_graph = pickle.load(f)
 
 road_types = {
-    'trunk': 0.5,
-    'tertiary': 0.2,
-    'secondary': 0.25,
-    'primary': 0.375,
-    'residential': 0.1,
-    'track': 0,
-    'unclassified': 0,
-    'service': 0,
-    'footway': 0,
-    'primary_link': 0.5,
-    'secondary_link': 0.25,
-    'tertiary_link': 0.2,
-    'motorway': 1,
+    'trunk': (0.5, "#00ff00"),
+    'tertiary': (0.2, "#007f00"),
+    'secondary': (0.25, "#007f00"),
+    'primary': (0.375, "#00ff00"),
+    'residential': (0.1, "#007f00"),
+    'track': (0, "#007f00"),
+    'unclassified': (0, "#007f00"),
+    'service': (0, "#007f00"),
+    'footway': (0, "#007f00"),
+    'primary_link': (0.5, "#007f00"),
+    'secondary_link': (0.25, "#007f00"),
+    'tertiary_link': (0.2, "#007f00"),
+    'motorway': (1, "#00ff00"),
 }
 cumulative_image = None
 
 for cur_rt in road_types:
-    if road_types[cur_rt] > 0:
+    edge_linewidth, edge_color = road_types[cur_rt]
+    if edge_linewidth > 0:
         with open("graphs_{0}.pkl".format(name), "rb") as f:
             wrk_graph = pickle.load(f)
         for (u, v, k, d) in ref_graph.edges(keys = True, data = True):
@@ -45,12 +46,11 @@ for cur_rt in road_types:
             bbox = image_bbox,
             show = False, save = True, 
             filepath = "images/" + cur_rt + ".png", dpi = 600,
-            bgcolor = "#000000", edge_color = "#ffffff",
-            edge_linewidth = road_types[cur_rt])
+            bgcolor = "#000000", edge_color = edge_color,
+            edge_linewidth = edge_linewidth)
         img = Image.open("images/" + cur_rt + ".png")
         if cumulative_image is None:
             cumulative_image = Image.new("RGBA", img.size)
-        
         cumulative_image = Image.blend(cumulative_image, img, 0.5)
         cumulative_image = Image.eval(cumulative_image, lambda x: x*2)
 cumulative_image.save("final.png")
